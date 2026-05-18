@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @ToString
 //@NoArgsConstructor
 //@AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(of = "accountId", callSuper = false)
 @Entity
 public class Account implements Cloneable {
     @Id
@@ -28,7 +28,7 @@ public class Account implements Cloneable {
     private static final String[] accounttypes =  {"Checking", "Savings", "Fixed Deposit", "Business", "Joint"};
 
     public Account( String firstName, LocalDate openingDate, String accountType, Double balance, Boolean active) {
-        setAccountId( sequence.getAndIncrement() );
+        setAccountId();
         setFirstName( firstName );
         setOpeningDate( openingDate );
         setAccountType( accountType );
@@ -46,7 +46,7 @@ public class Account implements Cloneable {
     }
 
     public Account() {
-        setAccountId(sequence.getAndIncrement());
+        setAccountId();
         setFirstName("UNKW");
         setOpeningDate( LocalDate.now() );
         setAccountType("Credit");
@@ -54,10 +54,14 @@ public class Account implements Cloneable {
         setActive( true );
     }
 
+    public void setAccountId(){
+        this.accountId = sequence.getAndIncrement();
+    }
+
     public void setBalance(Double balance) {
         if(balance.doubleValue() < -1000)
             throw new AccountException("Kreditlimit ist überschritten!");
-        if(balance.doubleValue() < 100_000)
+        if(balance.doubleValue() > 100_000)
             throw new AccountException("Guthaben darf nicht über € 100.000 sein!");
         this.balance = balance;
     }
@@ -66,6 +70,7 @@ public class Account implements Cloneable {
         if(!Arrays.asList(accounttypes).contains( accountType ))
              throw new AccountException("Der übergeben Account Typ ist falsch!");
 
+        this.accountType = accountType;
     }
 
     @Override

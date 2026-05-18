@@ -2,16 +2,19 @@ package at.spengergasse.service;
 
 import at.spengergasse.domain.Account;
 import com.github.javafaker.Faker;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+@Service
 public class BankService {
     private ArrayList<Account> accounts;
 
     public BankService(){
         accounts = new ArrayList<>();
+        fillTestData(200);
     }
 
     public void fillTestData(int count){
@@ -36,8 +39,7 @@ public class BankService {
     }
 
     public ArrayList<Account> findAll(){
-        ArrayList<Account> copy = new ArrayList<>(accounts);
-        return copy;
+        return new ArrayList<>(accounts);
     }
 
     @Override
@@ -45,5 +47,17 @@ public class BankService {
         return accounts.stream()
                 .map(s -> s.toString())
                 .collect(Collectors.joining("\n"));
+    }
+
+    public void removeAllAccounts() {
+        accounts.clear();
+    }
+
+    public void addAccount(Account a) {
+        accounts.add(a);
+    }
+
+    public void raiseBalance10() {
+        accounts.forEach(a -> a.setBalance(a.getBalance() * 1.1));
     }
 }
